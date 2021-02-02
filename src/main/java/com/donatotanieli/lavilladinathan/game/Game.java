@@ -12,17 +12,19 @@ import java.util.ArrayList;
 
 
 /**
- *
+ *Classe che rappresenta la struttura del gioco
  * @author donatotanieli
  */
 public class Game {
     
-    private Player player;
-    private Room currentRoom;
-    private ArrayList<LightRoom> lightrooms;
-    public static boolean alive = true;
-    public static boolean winner = false;
+    private Player player; //il giocatore
+    private Room currentRoom; //la stanza in cui si trova il giocatore
+    private ArrayList<LightRoom> lightrooms; // la lista delle stanze illuminate che sostituiranno quelle al buio
+    public static boolean alive = true; //flag che rappresenta la sopravvivenza del giocatore
+    public static boolean winner = false; //flag che diventa true quando il giocatore ha completato il gioco
     
+    
+    //COSTRUTTORI
     public Game(Player player, Room currentRoom, ArrayList<LightRoom> lightrooms){
         this.player = player;
         this.currentRoom = currentRoom;
@@ -35,6 +37,7 @@ public class Game {
         lightrooms = new ArrayList<>();
     }
 
+    //GET E SET
     public Player getPlayer() {
         return player;
     }

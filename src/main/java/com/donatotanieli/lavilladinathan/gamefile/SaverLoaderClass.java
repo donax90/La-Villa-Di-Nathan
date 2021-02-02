@@ -18,11 +18,18 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 /**
- *
+ *Classe che si occupa della gestione del salvataggio e del caricamento della partita
  * @author donatotanieli
  */
 public class SaverLoaderClass {
     
+    /**
+     * Metodo che consente di salvare la partita serializzando l'oggetto Game
+     * @param g oggetto da serializzare
+     * @param path percorso su cui verrà salvato il file
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public void saveFile(Game g, String path) throws FileNotFoundException, IOException{
         
         FileOutputStream fout = new FileOutputStream(path);
@@ -37,6 +44,14 @@ public class SaverLoaderClass {
         
     }
     
+    /**
+     * Metodo che consente di caricare la partita deserializzando l'oggetto Game
+     * @param g oggetto da deserializzare
+     * @param path percorso del file selezionato
+     * @throws FileNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
     public void loadFile(Game g, String path) throws FileNotFoundException, IOException, ClassNotFoundException{
         FileInputStream fin = new FileInputStream(path);
         ObjectInputStream in = new ObjectInputStream(fin);

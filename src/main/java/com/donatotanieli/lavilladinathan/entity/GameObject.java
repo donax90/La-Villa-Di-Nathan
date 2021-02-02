@@ -10,22 +10,24 @@ import java.util.List;
 
 
 /**
- *
+ *Classe che rappresenta l'oggetto del gioco
  * @author donatotanieli
  */
 public class GameObject extends Entity implements Serializable{
     
-    private ObjectType objetcType;
-    private boolean isTakeable;
-    private boolean isOpenable;
-    private boolean isOpened;
-    private boolean isGameObjectContainer;
-    private boolean moveable;
-    private boolean visible;
-    private int score;
-    private List<String> alias;
-    private List<GameObject> gameObjList;
+    private ObjectType objetcType; //Il tipo di oggetto
+    private boolean isTakeable; //true se l'oggetto è prendibile
+    private boolean isOpenable; //true se l'oggetto è apribile
+    private boolean isOpened; //true se l'oggetto è aperto
+    private boolean isGameObjectContainer; //true se l'oggetto è un contenitore di altri oggetti
+    private boolean moveable; //true se l'oggetto si può spostare
+    private boolean visible; //true se l'oggetto è visibile
+    private int score; //valore dell'oggetto come punteggio
+    private List<String> alias; //lista di alias dell'oggetto 
+    private List<GameObject> gameObjList; //lista di eventuali oggetti se l'oggetto in questione è un contenitore 
 
+    //COSTRUTTORI 
+    
     public GameObject() {
         super(null, null, null);
     }
@@ -44,6 +46,7 @@ public class GameObject extends Entity implements Serializable{
         this.gameObjList = gameObjList;
     }
 
+    //GET E SET
     public boolean isVisible() {
         return visible;
     }
@@ -125,10 +128,12 @@ public class GameObject extends Entity implements Serializable{
     }
     
     
+    //ALTRI METODI
+    
     
     /**
-     * Metodo che mi consente di verificare che la parola che l'utente digita corrisponda ad un oggetto del gioco
-     * @param obj 
+     * Metodo che mi consente di verificare che la parola che l'utente digita corrisponda ad un oggetto del gioco e mi restituisce il tipo
+     * @param obj parola da verificare
      * @return type che è null se la parola non è un oggetto, un ObjectType altrimenti
      */
     public ObjectType checkObject(String obj){
@@ -139,6 +144,11 @@ public class GameObject extends Entity implements Serializable{
         return type;
     }
     
+    /**
+     * Metodo che mi consente di verificare che la parola che l'utente digita corrisponda ad un oggetto del gioco
+     * @param obj parola da verificare
+     * @return true se l'ggetto è un GameObject, false altrimenti
+     */
     public boolean isGameObject(String obj){
         boolean isGameObj = false;
         if(this.getName().equals(obj) || alias.contains(obj)){
@@ -147,22 +157,18 @@ public class GameObject extends Entity implements Serializable{
         return isGameObj;
     }
     
-    public boolean isInTheGameObject(ObjectType type){
-        boolean isInGameObj = false;
-        for(int i = 0; i < gameObjList.size(); i ++){
-            if(gameObjList.get(i).getObjetcType() == type){
-                isInGameObj = true;
-                break;
-            }
-                
-        }
-        return isInGameObj;
-    }
-    
+    /**
+     * Metodo che rimuove l'oggetto go dalla lista
+     * @param go oggetto da rimuovere
+     */
     public void removeGameObject(GameObject go){
         gameObjList.remove(go);
     }
 
+    /**
+     * toString del nome
+     * @return 
+     */
     @Override
     public String toString() {
         return getName(); 

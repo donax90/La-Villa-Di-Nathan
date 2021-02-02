@@ -11,20 +11,29 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
- *
+ *Classe che analizza l'input dell'utente e ne codifica le informazioni salvandole in un oggetto OutputParser
  * @author donatotanieli
  */
 public class Parser {
     
     private OutputParser output;
 
+    //COSTRUTTORE
     public Parser() {
         output = new OutputParser();
     }
     
+    //METODI
+    
+    /**
+     * Metodo che riceve in ingresso la lista degli oggetti del gioco e la stringa che l'utente ha digitato
+     * @param input
+     * @param objList
+     * @return output di tipo OutputParser che contiene il comando e la lista degli oggetti
+     */
     public OutputParser parseInput(String input, ArrayList<GameObject> objList){
-        ArrayList<String> wordlist = wordListInput(input);
-        parse(wordlist, objList);
+        ArrayList<String> wordlist = wordListInput(input); //Construisco l'array di parole scritte dall'utente
+        parse(wordlist, objList); //invoco il metodo che consentirà di interpretare le parole dell'utente
         return output;
     }
     
@@ -42,7 +51,12 @@ public class Parser {
         }
         return wordList;
     }
-        
+     
+    /**
+     * Metodo che controlla la dimensione dell'arrayList per invocare il metodo opportuno in base al numero di parole
+     * @param wordlist
+     * @param objList 
+     */
     public void parse(ArrayList<String> wordlist, ArrayList<GameObject> objList) {
 
         //Se arraylist è vuoto, ovvero l'utente non ha scritto nulla...
@@ -70,6 +84,10 @@ public class Parser {
         }
     }   
 
+    /**
+     * Metodo che consente di codificare il comando scritto dall'utente. Invocato quando l'utente scrive una sola parola
+     * @param w0 
+     */
     private void parseOneWord(String w0) {
         //Essendo di dimensione 1 non si tratta di un oggetto
 		output.setObjList(null);
@@ -127,6 +145,13 @@ public class Parser {
                 }
     }
 
+    /**
+     * Metodo che consente di codificare il comando scritto dall'utente e l'oggetto. Invocato quando l'utente scrive due parole parole
+     * perciò si presume che l'utente voglia interagire con un oggetto
+     * @param w0
+     * @param w1
+     * @param objList 
+     */
     private void parseTwoWords(String w0, String w1, ArrayList<GameObject> objList) {
         
         //Essendo 2 parole probabilmente è un'azione + oggetto
@@ -184,6 +209,13 @@ public class Parser {
         
     }
 
+    /**
+     * Metodo invocato quando le parole sono 4, ma che per il controllo effettivo sono 3c. 
+     * In questo caso l'interazione è con due oggetti come ad es. ACCENDI LANTERNA CON ACCENDINO
+     * Le parole sono 4, viene semplicemente verificata la preposizione se è "con" e le altre parole codficate
+     * @param words
+     * @param objList 
+     */
     private void parseThreeWords(ArrayList<String> words, ArrayList<GameObject> objList) {
         //Essendo 4 parole potrebbe essere la combinazione di azione + oggetto + preposizione + oggetto
         //Deve essere scritto in quest'ordine preciso altrimenti il comando non viene riconosciuto

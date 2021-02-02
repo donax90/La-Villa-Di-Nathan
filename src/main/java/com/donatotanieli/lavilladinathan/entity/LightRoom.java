@@ -9,13 +9,15 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- *
+ *Classe che rappresenta la stanza illuminata. Una stanza illuminata può contenere degli oggetti
  * @author donatotanieli
  */
 public class LightRoom extends Room implements Serializable{
     
-    private List<GameObject> gameObjList;
+    private List<GameObject> gameObjList; //lista di oggetti della stanza
 
+    
+    //COSTRUTTORI
     public LightRoom() {
     }
 
@@ -25,6 +27,8 @@ public class LightRoom extends Room implements Serializable{
         this.gameObjList = gameObjList;
     }
 
+    
+    //SET E GET
     public List<GameObject> getGameObjList() {
         return gameObjList;
     }
@@ -33,6 +37,14 @@ public class LightRoom extends Room implements Serializable{
         this.gameObjList = gameObjList;
     }
     
+    
+    //ALTRI METODI
+    
+    /**
+     * Metodo che restituisce l'oggetto dalla lista cercandolo in base al tipo
+     * @param type il tipo di oggetto da cercare
+     * @return null se l'oggetto non c'è, GameObject altrimenti
+     */
     public GameObject getGameObjectFromList(ObjectType type){
         int index = -1;
         if(gameObjList != null){
@@ -50,29 +62,10 @@ public class LightRoom extends Room implements Serializable{
         }
     }
     
-    public boolean isInTheRoom(ObjectType type){
-        boolean isInRoom = false;
-        if(gameObjList != null){
-            for(int i = 0; i < gameObjList.size(); i++){
-                if(gameObjList.get(i).isIsGameObjectContainer()){
-                    for(int j = 0; j < gameObjList.get(i).getGameObjList().size(); j++){
-                        if(gameObjList.get(i).getGameObjList().get(j).isIsGameObjectContainer()){
-                            if(gameObjList.get(i).getGameObjList().get(j).getGameObjList().get(0).getObjetcType() == type){
-                                isInRoom = true;
-                            }
-                        }
-                    }
-                }else{
-                    if(gameObjList.get(i).getObjetcType() == type){
-                        isInRoom = true;
-                        break;
-                    }
-                }
-            }
-        } 
-        return isInRoom;
-    }
-    
+    /**
+     * Metodo che rimuove l'oggetto gameObj dalla lista
+     * @param gameObj oggetto da rimuovere
+     */
     public void removeGameObject(GameObject gameObj){
         gameObjList.remove(gameObj);
     }

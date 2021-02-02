@@ -8,25 +8,25 @@ package com.donatotanieli.lavilladinathan.entity;
 import java.io.Serializable;
 
 /**
- *
+ *Enumerazione che contiene i possibili valori che il comando può assumere
  * @author donatotanieli
  */
 public enum Command implements Serializable{
-    N, 
-    S, 
-    E,
-    W,
-    I,
-    OPEN,
-    TAKE,
-    SHOW,
-    EXAMINE,
-    HELP,
-    EXIT,
-    SAVE,
-    READ,
-    TURN_ON,
-    MOVE,
-    USE
+    N, //nord
+    S, //sud
+    E, //est
+    W, //ovest
+    I, //inventario
+    OPEN, //apri
+    TAKE, //prendi
+    SHOW, //osserva
+    EXAMINE, //esamina
+    HELP, //info
+    EXIT, //esci o abbandona
+    SAVE, //salva
+    READ, //leggi
+    TURN_ON, //accendi
+    MOVE, //sposta
+    USE //usa
     
 }

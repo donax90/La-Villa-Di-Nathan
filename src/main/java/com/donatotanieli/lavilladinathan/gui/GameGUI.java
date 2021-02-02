@@ -5,6 +5,7 @@
  */
 package com.donatotanieli.lavilladinathan.gui;
 
+import com.donatotanieli.lavilladinathan.database.DBConnection;
 import com.donatotanieli.lavilladinathan.entity.GameObject;
 import com.donatotanieli.lavilladinathan.entity.LightRoom;
 import com.donatotanieli.lavilladinathan.entity.Room;
@@ -16,6 +17,7 @@ import java.awt.Color;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +37,8 @@ public class GameGUI extends javax.swing.JFrame {
     
     private GameCommunicator gameC; //Oggetto che contiene i progressi del gioco e il Parser per la codifica del messaggio in input dell'utente
     private Room current; //Questo oggetto mi servirà per confrontarlo con la stanza in cui si trova il giocatore. Se cambia stanza pulisco il pannello
-    SaverLoaderClass sc = new SaverLoaderClass();;
+    SaverLoaderClass sc = new SaverLoaderClass();
+    DBConnection dbConnection = new DBConnection();
     
     /**
      * Creates new form GameGUI
@@ -103,18 +106,20 @@ public class GameGUI extends javax.swing.JFrame {
     /**
      * Metodo che viene invocato quando il giocatore muore. Viene mostrato il punteggio e si ritorna al menù principale
      */
-    public void gameOver(){
+    public void gameOver() throws SQLException{
         JOptionPane.showMessageDialog(null, "Sei morto!\nIl tuo punteggio è : " + gameC.getGameManager().getGame().getPlayer().getScore(), "OPS", JOptionPane.INFORMATION_MESSAGE);
         goToMenu();
+        saveOnDB();
     }
     
     /**
      * Metodo che viene invocato quanto il giocatore completa il gioco. Viene mostrato il punteggio e si ritorna al menù principale
      */
-    public void winner(){
+    public void winner() throws SQLException{
         JOptionPane.showMessageDialog(null, "Congratulazioni!\nSei riuscito a completare il gioco!\n"
                 + "Il tuo punteggio è : " + gameC.getGameManager().getGame().getPlayer().getScore(), "VITTORIA!!!!!!!", JOptionPane.INFORMATION_MESSAGE);
         goToMenu();
+        saveOnDB();
     }
     
     /**
@@ -129,7 +134,7 @@ public class GameGUI extends javax.swing.JFrame {
                         //Invoco il metodo saveFile per salvare il gioco passando il percorso e l'oggetto game
                         sc.saveFile(gameC.getGameManager().getGame(), path);                         
                     }
-                } catch (Exception e) {
+                } catch (HeadlessException | IOException e) {
                     JOptionPane.showMessageDialog(null, "Errore: " + e.getMessage(), e.getMessage(), JOptionPane.ERROR_MESSAGE);
                 }
     }
@@ -194,9 +199,19 @@ public class GameGUI extends javax.swing.JFrame {
     }
     
     /**
+     * Metodo che salba sul db il punteggio del giocatore
+     * @throws SQLException 
+     */
+    private void saveOnDB() throws SQLException{
+        dbConnection.connect();
+        dbConnection.addScore(gameC.getGameManager().getGame().getPlayer().getName(), gameC.getGameManager().getGame().getPlayer().getScore());
+        dbConnection.closeConnection();
+    }
+    
+    /**
      * Metodo che esegue il comando di input dell'utente, invocato nell'ActionListener del pulsante invio
      */
-    private void enterCommand(){
+    private void enterCommand() throws SQLException{
         
         try {
             String input = textComando.getText();       //stringa che contiene il testo scritto dall'utente
@@ -234,11 +249,22 @@ public class GameGUI extends javax.swing.JFrame {
             }
     }
     
+    /**
+     * Metodo che riceve in input la stringa da stampare sulla TextPane, permette di aggiungere il testo a quello già presente
+     * @param stringa
+     * @throws BadLocationException 
+     */
     public void appendText(String stringa) throws BadLocationException {
             StyledDocument document = (StyledDocument) pannelloTesto.getDocument();
 	    document.insertString(document.getLength(), stringa, null);
 	}
 	
+    /**
+     * Metodo che aggiorna le informazioni della stanza, viene invocato 
+     * quando il giocatore accede ad una nuova stanza sovrascrivendo il testo presente nella TextPane
+     * @param stringa
+     * @throws BadLocationException 
+     */
     public void updateGame(String stringa) throws BadLocationException {
             pannelloTesto.setText(stringa);
             setColorText("===========" + (gameC.getGameManager().getGame().getCurrentRoom().getName()) + "===========\n", Color.red);
@@ -249,6 +275,12 @@ public class GameGUI extends javax.swing.JFrame {
             }
     }
     
+    /**
+     * Metodo che aggiunge al testo già presente la stringa di colore color passata come parametro 
+     * @param stringa
+     * @param color
+     * @throws BadLocationException 
+     */
     public void setColorText(String stringa, Color color) throws BadLocationException{
         SimpleAttributeSet set = new SimpleAttributeSet();
         StyleConstants.setForeground(set, color);
@@ -256,6 +288,11 @@ public class GameGUI extends javax.swing.JFrame {
         document.insertString(document.getLength(), stringa, set);
     }
 	
+    /**
+     * Metodo che riceve costruisce la stringa degli oggetti visibili nella stanza partendo dalla lista di oggetti in input
+     * @param goList
+     * @return stringa costruita
+     */
     private String lookPattern(List<GameObject> goList) {
             String str = "";
             if(goList.isEmpty()){
@@ -274,6 +311,7 @@ public class GameGUI extends javax.swing.JFrame {
                                     numbObjVisible++;  
                                 }
                             }
+                            //Se gli oggetti visibili all'interno di un oggetto contenitore sono più di 0 allora continuo a costruire la stringa
                             if(numbObjVisible > 0){
                                 str += " con dentro: ";
                                 for(int j = 0; j < goList.get(i).getGameObjList().size(); j ++){
@@ -288,6 +326,7 @@ public class GameGUI extends javax.swing.JFrame {
                                 str += "\n";
                             }
                         }else{
+                            //Se l'oggetto non è un container allora vado a capo e continuo a scorrere la lista
                             str += "\n";
                         }
                     }
@@ -312,7 +351,6 @@ public class GameGUI extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         pannelloTesto = new javax.swing.JTextPane();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
         lblPlayer = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
@@ -323,6 +361,8 @@ public class GameGUI extends javax.swing.JFrame {
         menuSave = new javax.swing.JMenuItem();
         menuLoad = new javax.swing.JMenuItem();
         menuMenu = new javax.swing.JMenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        Istruzioni = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -343,9 +383,6 @@ public class GameGUI extends javax.swing.JFrame {
 
         jLabel1.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
         jLabel1.setText("Premi invio per confermare ");
-
-        jLabel2.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
-        jLabel2.setText("Usa il comando info per aprire le istruzioni...");
 
         lblPlayer.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
         lblPlayer.setText("xxxxxxx");
@@ -400,6 +437,20 @@ public class GameGUI extends javax.swing.JFrame {
 
         jMenuBar1.add(menuFile);
 
+        jMenu1.setText("Supporto");
+        jMenu1.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
+
+        Istruzioni.setFont(new java.awt.Font("Papyrus", 0, 18)); // NOI18N
+        Istruzioni.setText("Istruzioni");
+        Istruzioni.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IstruzioniActionPerformed(evt);
+            }
+        });
+        jMenu1.add(Istruzioni);
+
+        jMenuBar1.add(jMenu1);
+
         setJMenuBar(jMenuBar1);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -415,11 +466,8 @@ public class GameGUI extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(textComando, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(26, 26, 26)
-                                .addComponent(jLabel1))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(429, 429, 429)
-                                .addComponent(jLabel2)))
-                        .addContainerGap(33, Short.MAX_VALUE))
+                                .addComponent(jLabel1)))
+                        .addContainerGap(87, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(3, 3, 3)
                         .addComponent(jLabel4)
@@ -443,24 +491,33 @@ public class GameGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(textComando, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)))
-                .addGap(22, 22, 22))
+                    .addComponent(jLabel1))
+                .addGap(32, 32, 32))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * ActionListener della textField
+     * @param evt 
+     */
     private void invio(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_invio
         if(evt.getKeyCode() == KeyEvent.VK_ENTER){
-            enterCommand();
+            try {
+                enterCommand();
+            } catch (SQLException ex) {
+                Logger.getLogger(GameGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }   
     }//GEN-LAST:event_invio
 
+    /**
+     * ActionListener della voce nuova partita del menù File
+     * @param evt 
+     */
     private void menuNewGameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuNewGameActionPerformed
        try {
             showJOptionPaneType("Cominciando una nuova partita perderai i progressi che hai ottenuto fino ad ora!\nVuoi salvare prima di continuare?",
@@ -470,6 +527,10 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuNewGameActionPerformed
 
+    /**
+     * ActionListener della voce torna al menù principale del menù File
+     * @param evt 
+     */
     private void menuMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuMenuActionPerformed
         try {
             showJOptionPaneType("Uscendo perderai i progressi che hai ottenuto fino ad ora!\nVuoi davvero continuare?", "TORNA AL MENU' PRINCIPALE");
@@ -478,10 +539,18 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuMenuActionPerformed
 
+    /**
+     * ActionListener della voce salva del menù File
+     * @param evt 
+     */
     private void menuSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSaveActionPerformed
         save();
     }//GEN-LAST:event_menuSaveActionPerformed
 
+    /**
+     * ActionListener della voce carica del menù File
+     * @param evt 
+     */
     private void menuLoadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuLoadActionPerformed
         try {
             showJOptionPaneType("Caricando un'altra partita perderai i progressi che hai ottenuto fino ad ora!\nVuoi salvare prima di continuare?", "CARICA PARTITA");
@@ -490,12 +559,21 @@ public class GameGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuLoadActionPerformed
 
+    /**
+     * ActionListener della voce istruzioni del menù Supporto
+     * @param evt 
+     */
+    private void IstruzioniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IstruzioniActionPerformed
+        JOptionPane.showMessageDialog(null, gameC.getGameManager().showInstructions(), "ISTRUZIONI PER GIOCARE", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_IstruzioniActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem Istruzioni;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel labScore;

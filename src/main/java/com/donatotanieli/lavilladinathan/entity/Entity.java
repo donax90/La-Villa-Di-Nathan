@@ -8,21 +8,23 @@ package com.donatotanieli.lavilladinathan.entity;
 import java.io.Serializable;
 
 /**
- *
+ *Claase che rappresenta un'entità generica del gioco che può essere un oggetto o una stanza. Contiene le informazioni principali
  * @author donatotanieli
  */
 public class Entity implements Serializable{
     
-    private String name;
-    private String description;
-    private String look;
+    private String name;    //nome 
+    private String description; //la descrizione dell'entità
+    private String look;    //stringa che conterrà la frase quando l'utente vorrà osservare l'entità
 
+    //COSTRUTTORE
     public Entity(String name, String description, String look) {
         this.name = name;
         this.description = description;
         this.look = look;
     }
 
+    //GET E SET
     public String getName() {
         return name;
     }

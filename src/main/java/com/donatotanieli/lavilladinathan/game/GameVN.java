@@ -8,19 +8,26 @@ package com.donatotanieli.lavilladinathan.game;
 import com.donatotanieli.lavilladinathan.parser.OutputParser;
 
 /**
- *
+ *Classe astratta che definisce la gestione del gioco
  * @author donatotanieli
  */
 public abstract class GameVN {
     
-    private Game game;
+    private Game game; 
     
+    /**
+     * Metodo astratto che gestisce l'esecuzione del comando che l'utente ha scritto
+     * @param output 
+     * @return stringa di risposta dopo aver eseguito il comando
+     */
     protected abstract String executeCommand(OutputParser output);
     
+    //COSTRUTTORE
     public GameVN(Game g){
         this.game = g;
     }
 
+    //GET E SET
     public Game getGame() {
         return game;
     }

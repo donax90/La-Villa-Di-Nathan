@@ -8,16 +8,17 @@ package com.donatotanieli.lavilladinathan.entity;
 import java.io.Serializable;
 
 /**
- *
+ *Classe che rappresenta la stanza non illuminata del gioco
  * @author donatotanieli
  */
 public class Room extends Entity implements Serializable{
-    private Room n;
-    private Room s;
-    private Room e;
-    private Room w;
-    private ObjectType unlockedBy;
+    private Room n; //stanza nord
+    private Room s; //stanza sud
+    private Room e; //stanza est
+    private Room w;//stanza ovest
+    private ObjectType unlockedBy; //tipo di oggetto che blocca la stanza
 
+    //COSTRUTTORI
     public Room(Room n, Room s, Room e, Room w, ObjectType unlockedBy, String name, String description, String look) {
         super(name, description, look);
         this.n = n;
@@ -31,6 +32,7 @@ public class Room extends Entity implements Serializable{
         super(null, null, null);
     }
 
+    //GET E SET
     public Room getN() {
         return n;
     }
@@ -71,6 +73,12 @@ public class Room extends Entity implements Serializable{
         this.unlockedBy = unlockedBy;
     }
     
+    //ALTRI METODI
+    
+    /**
+     * Metodo che verifica se la stanza è accessibile o meno
+     * @return true se è aperta, false altrimenti
+     */
     public boolean isOpened(){
         return unlockedBy == null;
     }

@@ -8,15 +8,16 @@ package com.donatotanieli.lavilladinathan.entity;
 import java.io.Serializable;
 
 /**
- *
+ *Classe che rappresenta il giocatore
  * @author donatotanieli
  */
 public class Player implements Serializable{
     
-    private String name;
-    private Inventory inventory;
-    private int score;
+    private String name; //nome
+    private Inventory inventory; //inventario
+    private int score; //punteggio
 
+    //COSTRUTTORI
     public Player() {
         this.inventory = new Inventory();
         this.score = 0;
@@ -28,6 +29,7 @@ public class Player implements Serializable{
         this.score = 0;
     }
 
+    //GET E SET
     public String getName() {
         return name;
     }
@@ -52,14 +54,26 @@ public class Player implements Serializable{
         this.score = score;
     }
     
+    //ALTRI METODI
+    
+    /**
+     * Incrementa il punteggio di 1
+     */
     public void incrementScore(){
         score++;
     }
     
+    /**
+     * Incrementa il punteggio in base al numero passato
+     * @param num valore che indica di quanto incrementare il punteggio
+     */
     public void incrementScore(int num){
         score += num;
     }
     
+    /**
+     * Metodo che sottrae punti al giocatore
+     */
     public void decrementScore(){
         switch(score){
             case 0 :

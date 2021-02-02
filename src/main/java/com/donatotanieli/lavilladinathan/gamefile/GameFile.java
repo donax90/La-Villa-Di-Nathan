@@ -15,22 +15,31 @@ import java.util.Arrays;
 
 
 /**
- *
+ *Classe che contiene le risorse del gioco: gli oggetti e le stanze
  * @author donatotanieli
  */
 public class GameFile {
     
     private Game g;
     
+    //COSTRUTTORE
+    
     public GameFile(){
         g = new Game();
         this.setResources();
     }
     
+    //GET
     public Game getGame(){
         return this.g;
     }
     
+    //ALTRI METODI
+    
+    /**
+     * Metodo che carica tutti gli oggetti del gioco in una lista che servirà per il parser per la codifica dell'input dell'utente
+     * @return 
+     */
     public ArrayList<GameObject> getGameObjectList(){
         
         ArrayList<GameObject> lista = new ArrayList<>();
@@ -564,6 +573,9 @@ public class GameFile {
         return lista;
     }
     
+    /**
+     * Metodo che carica le stanze e setta l'istanza g
+     */
     private void setResources(){
         
         

@@ -10,28 +10,33 @@ import com.donatotanieli.lavilladinathan.entity.GameObject;
 import com.donatotanieli.lavilladinathan.entity.LightRoom;
 import com.donatotanieli.lavilladinathan.entity.ObjectType;
 import com.donatotanieli.lavilladinathan.entity.Room;
-import com.donatotanieli.lavilladinathan.gamefile.GameFile;
+import com.donatotanieli.lavilladinathan.gamefile.SaverLoaderClass;
 import com.donatotanieli.lavilladinathan.parser.OutputParser;
+import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 /**
- *
+ *Classe che gestisce la logica del gioca e implementa il metodo astratto della classe astratta GameVN
  * @author donatotanieli
  */
 public class GameManager extends GameVN{
     
-    public static boolean zombieFlag = false;
+    public static boolean zombieFlag = false; //flag che si attiva quando ci si trova all cospetto dello zombie, l'interazione cambia
     
+    //COSTRUTTORE
     public GameManager(Game g){
         super(g);
     }
     
+    /**
+     * Implementazione del metodo astratto. Il metodo contiene la logica del gioco e in base all'azione restituisce la stringa di risposta
+     * @param output parser che contiene il comando
+     * @return stringa da comunicare all'utente
+     */
     @Override
     public String executeCommand(OutputParser output){
         
@@ -39,6 +44,8 @@ public class GameManager extends GameVN{
         
         Command command = output.getCommand();
         
+        //verifico command se è null, in questo caso il parser non ha potuto associare un comando in quanto l'utente ha digitato 
+        //una parola che non è stata interpretata
         if(command == null){
             int size = output.getWordsNumber();
             switch(size){
@@ -75,47 +82,7 @@ public class GameManager extends GameVN{
         }else{
             
             //L'utente ha inserito un comando corretto
-            
-            //L'oggetto o gli oggetti scritti dall'utente possono essere oggetti presenti nella stanza o nell'inventario. 
-            //Creo degli oggetti di GameObject come appoggio per i vari confronti
-            //GameObject go1 = null; //Possibile oggetto1 della stanza
-            //GameObject go2 = null; //Possibile oggetto2 che dovrebbe interagire con oggetto1
-            //GameObject go1Inventory = null; //Possibile oggetto1 dell'inventario
-            //GameObject go2Inventory = null; //Possibile oggetto2 dell'inventario
-            
-            Room r = getGame().getCurrentRoom();
-            
-            //Controllo se sono oggetti nella stanza..se non sono presenti allora saranno null
-            //if(r instanceof LightRoom){
-            //    if(output.getObjList() != null){
-            //        if(output.getObjList().size() == 1){
-            //            go1 = ((LightRoom)r).getGameObjectFromList(output.getObjList().get(0).getObjetcType());
-            //
-            //        }else{
-            //            go1 = ((LightRoom)r).getGameObjectFromList(output.getObjList().get(0).getObjetcType());
-            //            go2 = ((LightRoom)r).getGameObjectFromList(output.getObjList().get(1).getObjetcType());
-            //        }
-            //    }
-            //}
-            
-            //Controllo se gli oggetti sono nell'inventario..se non sono presenti restano null
-            //if(output.getObjList() != null){
-            //    if(output.getObjList().size() == 1 || output.getObjList().get(0).getObjetcType() == ObjectType.DOOR){
-            //        if(getGame().getPlayer().getInventory().contains(output.getObjList().get(0))){
-            //            go1Inventory = getGame().getPlayer().getInventory().getInventoryList()
-            //                    .get(getGame().getPlayer().getInventory().indexOfGame(output.getObjList().get(0)));
-            //        }
-            //    }else{
-            //        if(getGame().getPlayer().getInventory().contains(output.getObjList().get(0)) 
-            //                && getGame().getPlayer().getInventory().contains(output.getObjList().get(1))){
-            //            go1Inventory = getGame().getPlayer().getInventory().getInventoryList()
-            //                    .get(getGame().getPlayer().getInventory().indexOfGame(output.getObjList().get(0)));
-            //            go2Inventory = getGame().getPlayer().getInventory().getInventoryList()
-            //                    .get(getGame().getPlayer().getInventory().indexOfGame(output.getObjList().get(1)));
-
-            //        }
-            //    }
-            //}
+            Room r = getGame().getCurrentRoom();    //Ottengo il riferimento della stanza in cui si trova il giocatore
             
             //In questo if si entra solo quando ci si trova davanti lo zombie nella catacomba
             //Il giocatore ha solo un tentativo per ucciderlo (usare la spada) altrimenti si muore
@@ -145,6 +112,7 @@ public class GameManager extends GameVN{
                         break;
                 }
             }else{
+                //il gioco prosegue normalmente
                 switch(command){
 
                     //Comandi di movimento
@@ -908,7 +876,22 @@ public class GameManager extends GameVN{
                         break;
 
                     case SAVE :
-
+                        JFileChooser fc = new JFileChooser();
+                        fc.setCurrentDirectory(new File(".//SaveFolder")); // viene visualizzata la cartella inserita nel percorso
+                            try {
+                                    if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                                        String path = fc.getSelectedFile().getPath(); //Stringa che contiene il persorso del file
+                                        //Invoco il metodo saveFile per salvare il gioco passando il percorso e l'oggetto game
+                                        SaverLoaderClass sc = new SaverLoaderClass();
+                                        sc.saveFile(getGame(), path);
+                                        outString = "Gioco salvato!";
+                                    }else{
+                                        outString = "Non è stato possibile salvare il gioco!";
+                                    }
+                                } catch (HeadlessException | IOException e) {
+                                    JOptionPane.showMessageDialog(null, "Errore: " + e.getMessage(), e.getMessage(), JOptionPane.ERROR_MESSAGE);
+                                }
+                                
                         break;
 
 
@@ -922,33 +905,54 @@ public class GameManager extends GameVN{
         return outString;
     }
     
+    /**
+     * Metodo che consente di settare il player nella stanza r
+     * @param r stanza in cui il player si troverà
+     * @return dopo aver settato il player viene ritornata la stringa contentente il nome della stanza e la descrizione
+     */
     private String updateRoom(Room r){
         getGame().setCurrentRoom(r);
         return getGame().getCurrentRoom().getName() + "\n\n" + getGame().getCurrentRoom().getDescription();
     }
     
+    /**
+     * Metodo che setta a null il campo unlockedby della stanza: Vuol dire che un accesso che prima era bloccato ora è accessibile
+     * @param r stanza da sbloccare
+     * @return Stringa di risposta
+     */
     private String unlockedDoor(Room r){
         r.setUnlockedBy(null);
         return("Fatto. Ora si può accedere!");
     }
     
-    private String showInstructions(){
+    /**
+     * Metodo che crea una stringa per mostrare le istruzioni del gioco
+     * @return stringa contenente le istruzioni
+     */
+    public String showInstructions(){
         return("Usa i seguenti comandi per giocare:\n" +
-                "\"Direzioni:\n" +
-                "\"- n, s, e, o oppure nord, sud, est, ovest\n" +
-                "\"Azioni:\n" +
-                "\"-prendi\" per raccogliere un oggetto;\n" +
-                "\"-usa\" per usare un oggetto in tuo possesso;\n" +
-                "\"-osserva o guarda\" per osservare la stanza o il luogo alla ricerca di più dettagli;\n" +
-                "\"-osserva o guarda o esamina [oggetto]\" per osservare l'oggetto;\n" +
-                "\"-apri [oggetto]\" per aprire un oggetto;\n" +
-                "\"-apri porta con [oggetto]\" per aprire una porta tramite un oggetto;\n" +
-                "\"-leggi [oggetto]\" per leggere;\n" +
-                "\"-accendi [oggetto] con [oggetto]\" per accendere un oggetto;\n"+
-                "\"-salva\" per salvare la partita\n" +
-                "\"-i o inventario\" per aprire l'inventario degli oggetti in tuo possesso.\n");
+                "DIREZIONI:\n" +
+                "-\" n, s, e, o \" oppure \"nord, sud, est, ovest\" per muoverti nella direzione specificata.\n" +
+                "AZIONI:\n" +
+                "-\"prendi + oggetto\" per raccogliere un oggetto;\n" +
+                "-\"usa + oggetto\" per usare un oggetto in tuo possesso;\n" +
+                "-\"osserva o guarda\" per osservare la stanza o il luogo alla ricerca di più dettagli;\n" +
+                "-\"osserva o guarda o esamina + oggetto\" per osservare l'oggetto;\n" +
+                "-\"apri + oggetto\" per aprire un oggetto;\n" +
+                "-\"apri porta con + oggetto\" per aprire una porta tramite un oggetto;\n" +
+                "-\"leggi + oggetto\" per leggere;\n" +
+                "-\"sposta + oggetto\" per spostare un oggetto;\n" +
+                "-\"accendi + oggetto con + oggetto\" per accendere un oggetto;\n"+
+                "-\"salva\" per salvare la partita;\n" +
+                "-\"i o inventario\" per aprire l'inventario degli oggetti in tuo possesso;\n"+
+                "-\"esci o abbandona\" per uscire dal gioco senza salvare. Corrisponde ad arrendersi;\n" + 
+                "-\"info\" per aprire le istruzioni da riga di comando.");
     }
     
+    /**
+     * Metodo che consente di sostituire la stanza buia con quella illuminata
+     * @param r stanza da illuminare
+     */
     private void setLightRoom(Room r){
         
         ArrayList<LightRoom> lightrooms = getGame().getLightrooms();
@@ -976,7 +980,7 @@ public class GameManager extends GameVN{
     
     /**
      * Questo metodo permette di verificare se l'oggetto è presente o meno nella stanza
-     * @param gameObject
+     * @param gameObject oggetto da verificare
      * @return false se non è presente, true se è nella stanza
      */
     private boolean verifyObjectsInRoom(GameObject gameObject){
@@ -997,6 +1001,11 @@ public class GameManager extends GameVN{
         return flag;
     }
     
+    /**
+     * Questo metodo permette di verificare se l'oggetto è presente o meno nell'inventario
+     * @param gameObject oggetto da verificare
+     * @return true se l'oggetto è presente, false altrimenti
+     */
     private boolean verifyObjectInInventory(GameObject gameObject){
         boolean flag = false;
         //Affinché il controllo vada a buon fine gameObject non deve essere null
@@ -1013,6 +1022,9 @@ public class GameManager extends GameVN{
         return flag;
     }  
     
+    /**
+     * Metodo che setta la variabile statica alive a false. Sta ad indicare che il giocatore è morto
+     */
     private void death(){
         Game.alive = false;   
     }

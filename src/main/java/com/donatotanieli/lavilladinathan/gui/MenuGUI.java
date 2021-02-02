@@ -5,11 +5,13 @@
  */
 package com.donatotanieli.lavilladinathan.gui;
 
+import com.donatotanieli.lavilladinathan.database.DBConnection;
 import com.donatotanieli.lavilladinathan.game.Game;
 import com.donatotanieli.lavilladinathan.gamefile.SaverLoaderClass;
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -21,6 +23,8 @@ import javax.swing.text.BadLocationException;
  * @author donatotanieli
  */
 public class MenuGUI extends javax.swing.JFrame {
+    
+    DBConnection dbConnection = new DBConnection();
 
     /**
      * Creates new form MenuGUI
@@ -65,6 +69,8 @@ public class MenuGUI extends javax.swing.JFrame {
         btnLoadGame = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        mostra_punteggi = new javax.swing.JButton();
+        exit = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -92,6 +98,22 @@ public class MenuGUI extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Papyrus", 0, 14)); // NOI18N
         jLabel2.setText("Sviluppato da: DONATO TANIELI");
 
+        mostra_punteggi.setFont(new java.awt.Font("Papyrus", 0, 13)); // NOI18N
+        mostra_punteggi.setText("Mostra Punteggi");
+        mostra_punteggi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mostra_punteggiActionPerformed(evt);
+            }
+        });
+
+        exit.setFont(new java.awt.Font("Papyrus", 0, 13)); // NOI18N
+        exit.setText("Esci");
+        exit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,7 +124,9 @@ public class MenuGUI extends javax.swing.JFrame {
                         .addGap(194, 194, 194)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnNewGame, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnLoadGame, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
+                            .addComponent(btnLoadGame, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(mostra_punteggi, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                            .addComponent(exit, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(104, 104, 104)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -119,9 +143,13 @@ public class MenuGUI extends javax.swing.JFrame {
                 .addComponent(jLabel2)
                 .addGap(49, 49, 49)
                 .addComponent(btnNewGame)
-                .addGap(41, 41, 41)
+                .addGap(18, 18, 18)
                 .addComponent(btnLoadGame)
-                .addContainerGap(120, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(mostra_punteggi)
+                .addGap(18, 18, 18)
+                .addComponent(exit)
+                .addContainerGap(49, Short.MAX_VALUE))
         );
 
         pack();
@@ -154,11 +182,43 @@ public class MenuGUI extends javax.swing.JFrame {
         load();
     }//GEN-LAST:event_btnLoadGameActionPerformed
 
+    /**
+     * AcionListener del bottone "Mostra Punteggi"
+     * @param evt 
+     */
+    private void mostra_punteggiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostra_punteggiActionPerformed
+        String stringa = "Punteggi:\n\n";
+        try {
+            dbConnection.connect();
+            stringa += dbConnection.getScores();          
+        } catch (SQLException ex) {
+            Logger.getLogger(MenuGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }finally{
+            try {
+                dbConnection.closeConnection();
+            } catch (SQLException ex) {
+                Logger.getLogger(MenuGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        JOptionPane.showMessageDialog(null, stringa, "PUNTEGGI", JOptionPane.INFORMATION_MESSAGE);
+        
+    }//GEN-LAST:event_mostra_punteggiActionPerformed
+
+    /**
+     * AcionListener del bottone "Esci"
+     * @param evt 
+     */
+    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
+        dispose();
+    }//GEN-LAST:event_exitActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLoadGame;
     private javax.swing.JButton btnNewGame;
+    private javax.swing.JButton exit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JButton mostra_punteggi;
     // End of variables declaration//GEN-END:variables
 }

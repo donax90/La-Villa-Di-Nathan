@@ -8,7 +8,7 @@ package com.donatotanieli.lavilladinathan.entity;
 import java.io.Serializable;
 
 /**
- *
+ *Enumerazione che contiene i possibili tipi di oggetti presenti nel gioco
  * @author donatotanieli
  */
 public enum ObjectType implements Serializable{
