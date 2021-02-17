@@ -819,7 +819,8 @@ public class GameManager extends GameVN{
                                 if(gameRead.getObjetcType() == ObjectType.SIGNBOARD){
                                     outString = "Benvenuti nella villa del conte Nathan!\nSe come tanti altri siete alla ricerca del suo tesoro allora solo un consiglio.\nAndatevene subito! La villa è piena di trabocchetti!";
                                 }else if(gameRead.getObjetcType() == ObjectType.SIGN){
-                                    outString = "Qui è dove è stato sepolto segretamente il conte Nathan.";
+                                    outString = "Qui è dove è stato sepolto segretamente il conte Nathan. Se pensavi di avercela fatta allora ti sbagli!"
+                                            + " Bada bene a cosa usare per aprire la porta. Solo il sacrificio di una parte del corpo potrà condurre il tuo cammino dal conte!";
                                 }else if(gameRead.getObjetcType() == ObjectType.MISSIVE){
                                     outString = "A te che leggi questo biglietto,\nse come me sei venuto qui alla ricerca del tesoro di Nathan\n"
                                             + "allora ti consiglio di andartene! In questa villa si aggira uno zombie, sono stato colpito!\n"

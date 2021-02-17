@@ -720,6 +720,7 @@ public class GameFile {
         LightRoom ingressoCatacomba = new LightRoom();
         ingressoCatacomba.setName("INGRESSO CATACOMBA");
         ingressoCatacomba.setDescription("Uno stretto corridoio, a nord una porta con un cartello accanto!");
+        ingressoCatacomba.setLook("La porta è sprovvista di maniglia, vi è un foro. Credo che debba inserirci qualcosa per poterla aprire!");
         ingressoCatacomba.setUnlockedBy(ObjectType.LIBRARY);
         ingressoCatacomba.setGameObjList(new ArrayList<>(Arrays.asList(new GameObject[]{getGameObjectList().get(25)})));
         

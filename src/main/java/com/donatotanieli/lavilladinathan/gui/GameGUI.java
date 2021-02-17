@@ -501,7 +501,7 @@ public class GameGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * ActionListener della textField
+     * KeyListener della textField
      * @param evt 
      */
     private void invio(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_invio

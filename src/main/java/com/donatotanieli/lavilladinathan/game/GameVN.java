@@ -20,7 +20,7 @@ public abstract class GameVN {
      * @param output 
      * @return stringa di risposta dopo aver eseguito il comando
      */
-    protected abstract String executeCommand(OutputParser output);
+    public abstract String executeCommand(OutputParser output);
     
     //COSTRUTTORE
     public GameVN(Game g){
